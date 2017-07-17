@@ -1,0 +1,37 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  data:
+    COIN: |
+      Monacoin
+    DAEMON_URL: |
+      http://rpcuser:rpcpass@monacoind.electrumx.svc.cluster.local:9402/
+    DB_DIRECTORY: |
+      /db
+    ELECTRUMX: |
+      /home/electrumx/electrumx/electrumx_server.py
+    NET: |
+      mainnet
+    USERNAME: |
+      electrumx
+    coins.py: ""
+  kind: ConfigMap
+  metadata:
+    name: electrumx
+    namespace: electrumx
+- apiVersion: v1
+  data:
+    monacoin.conf: |
+      txindex=1
+      server=1
+      rpcallowip=0.0.0.0/0
+      rpcuser=rpcuser
+      rpcpassword=rpcpass
+  kind: ConfigMap
+  metadata:
+    name: monacoin-conf
+    namespace: electrumx
+kind: List
+metadata: {}
+resourceVersion: ""
+selfLink: ""

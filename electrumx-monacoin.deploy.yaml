@@ -1,0 +1,106 @@
+apiVersion: v1
+items:
+- apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    labels:
+      run: electrumx
+    name: electrumx
+    namespace: electrumx
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        run: electrumx
+    strategy:
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 1
+      type: RollingUpdate
+    template:
+      metadata:
+        labels:
+          run: electrumx
+      spec:
+        containers:
+        - env:
+          - name: HOST
+            value: 0.0.0.0
+          - name: TCP_PORT
+            value: "50001"
+          image: monacoex/electrumx:monacoin
+          imagePullPolicy: Always
+          name: electrumx
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /db
+            name: db
+          - mountPath: /env
+            name: env
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: electrumx
+          name: env
+        - emptyDir: {}
+          name: db
+- apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    labels:
+      run: monacoind
+    name: monacoind
+    namespace: electrumx
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        run: monacoind
+    strategy:
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 1
+      type: RollingUpdate
+    template:
+      metadata:
+        labels:
+          run: monacoind
+      spec:
+        containers:
+        - command:
+          - /usr/bin/monacoind
+          - -conf=/root/conf/monacoin.conf
+          image: monacoex/monacoind
+          imagePullPolicy: Always
+          name: monacoind
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /root/conf
+            name: monacoin-conf
+          - mountPath: /root/.monacoin
+            name: data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: monacoin-conf
+          name: monacoin-conf
+        - emptyDir: {}
+          name: data
+kind: List
+metadata: {}
+resourceVersion: ""
+selfLink: ""
