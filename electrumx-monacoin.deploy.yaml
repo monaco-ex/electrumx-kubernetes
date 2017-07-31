@@ -28,7 +28,7 @@ items:
             value: 0.0.0.0
           - name: TCP_PORT
             value: "50001"
-          image: monacoex/electrumx:monacoin
+          image: monacoex/electrumx:1.0.15
           imagePullPolicy: Always
           name: electrumx
           resources: {}
